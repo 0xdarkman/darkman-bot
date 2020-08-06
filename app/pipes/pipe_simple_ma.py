@@ -5,7 +5,7 @@ from app.modules.handlers import get_ma_indicator
 from app.modules.trader import Trader
 from app.settings.config import HIST_BTCUSD_4H_WEIGHTED_PKL
 from app.util.df_utils import load_pickle, filter_frame_by_dt_range, change_col_type
-
+from app.modules.plotter import Plotter
 
 @dataclass
 class PipeSimpleMA:
@@ -17,24 +17,43 @@ class PipeSimpleMA:
                 .pipe(change_col_type, col="Weighted_Price", set_type="float")
                 .pipe(get_ma_indicator)
                 .pipe(self.__prepare_input)
+                .pipe(self.__preprocess)
                 .pipe(self.__execute_trader, trader=self.trader)
+                .pipe(self.__postprocess)
         )
 
     @staticmethod
     def __prepare_input(df: pd.DataFrame) -> pd.DataFrame:
         return df.rename(columns={"Weighted_Price": "curr_price", "MA_15": "ma"})
 
-
+    @staticmethod
+    def __preprocess(df: pd.DataFrame) -> pd.DataFrame:
+        df["pct_change"] = df["curr_price"].pct_change()
+        return df
 
     @staticmethod
     def __execute_trader(df: pd.DataFrame, trader) -> pd.DataFrame:
         def get_trade(trader, row):
-            return trader.trade(curr_price=row["curr_price"], trade_price=row["ma"])
-        df["traded"] = df.apply(lambda row: get_trade(trader, row), axis=1)
-        df['balance'] = df['traded'].apply(lambda x: x.balance)
+            trader.trade(curr_price=row["curr_price"], trade_price=row["ma"], pct_change=row["pct_change"])
+            row["balance"] = trader.balance
+            row["active"] = trader.order.active
+            return row
+        df = df.apply(lambda row: get_trade(trader, row), axis=1)
         return df
 
+    @staticmethod
+    def __postprocess(df):
+        df["active"] = df["active"].apply(lambda x: 1 if x is True else 0)
+        return df
+
+    def plot_frame(self, df):
+        Plotter(df)
 
 if __name__ == '__main__':
     pipe = PipeSimpleMA()
     df = pipe.df
+
+    Plotter(df)
+
+    df = df.loc[df["Date"] <= pd.Timestamp("2020-03-13")]
+    df = df.loc[df["Date"] >= pd.Timestamp("2020-03-12")]
