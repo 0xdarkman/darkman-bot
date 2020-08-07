@@ -12,3 +12,7 @@ def filter_frame_by_dt_range(df, start, end):
 def change_col_type(df, col: str, set_type: str):
     df[col] = df[col].astype(eval(set_type))
     return df
+
+
+def change_col_name(df: pd.DataFrame, old_col: str, new_col: str) -> pd.DataFrame:
+    return df.rename(columns={old_col: new_col})
