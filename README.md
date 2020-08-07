@@ -20,7 +20,7 @@ This is automated trading bot.
 
 ## TODO
 - [ ] to implement "stop loss watchod"
-      read data every 15 minutes and execute bot on 4H hour only [00:00, 04:00, ..., 20:00] 
+      read data every 15 minutes and execute bot on 4H hour only ```[00:00, 04:00, ..., 20:00]```
       but stop losses to be monitored every 5 min;
 - [ ] to backtest various pct_change stop losses and select optimum value based on hist data;
 - [ ] to add live trading;
