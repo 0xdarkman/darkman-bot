@@ -2,15 +2,15 @@ import pandas as pd
 
 from dataclasses import dataclass
 from app.modules.handlers import get_ma_indicator
-from app.modules.trader import Trader
+from app.strategies.stategy_base import StrategyBase
 from app.settings.config import HIST_BTCUSD_4H_WEIGHTED_PKL
-from app.util.df_utils import load_pickle, filter_frame_by_dt_range, change_col_type
+from app.util.df_utils import load_pickle, filter_frame_by_dt_range, change_col_type, change_col_name
 from app.modules.plotter import Plotter
 
 @dataclass
 class PipeSimpleMA:
     def __post_init__(self):
-        self.trader = Trader()
+        self.trader = StrategyBase()
         self.df = (
             load_pickle(file_path=HIST_BTCUSD_4H_WEIGHTED_PKL)
                 .pipe(filter_frame_by_dt_range, start="2019-01-01", end="2020-04-01")
@@ -20,6 +20,7 @@ class PipeSimpleMA:
                 .pipe(self.__preprocess)
                 .pipe(self.__execute_trader, trader=self.trader)
                 .pipe(self.__postprocess)
+                .pipe(self.plot_frame)
         )
 
     @staticmethod
@@ -43,14 +44,14 @@ class PipeSimpleMA:
 
     @staticmethod
     def __postprocess(df: pd.DataFrame) -> pd.DataFrame:
-        df = df.set_index("Date")
+        df = change_col_name(df, old_col="Close", new_col="close")
         df["active"] = df["active"].apply(lambda x: 1 if x is True else 0)
         return df
 
     def plot_frame(self, df: pd.DataFrame) -> pd.DataFrame:
-        Plotter(df)
+        Plotter(df, plot_name="strategy_base")
+
 
 if __name__ == '__main__':
     pipe = PipeSimpleMA()
-    df = pipe.df
-    Plotter(df)
+

@@ -1,4 +1,4 @@
-from app.pipes.pipe_simple_ma import PipeSimpleMA
+from app.pipes.pipe_strategy_base import PipeSimpleMA
 
 
 if __name__ == '__main__':

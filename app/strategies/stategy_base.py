@@ -4,7 +4,7 @@ from typing import List, Optional
 
 
 @dataclass
-class Trader:
+class StrategyBase:
     rr: Optional[float] = 0.1
     fee: Optional[float] = 0.002
     num_orders: int = 1
