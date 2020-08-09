@@ -1,0 +1,17 @@
+digraph Tree {
+node [shape=box, style="rounded", color="black", fontname=helvetica] ;
+edge [fontname=helvetica] ;
+0 [label="Open_BTC <= -0.1\nmse = 13975399.8\nsamples = 415\nvalue = 5187.9"] ;
+1 [label="Average <= -0.8\nmse = 1787403.0\nsamples = 212\nvalue = 2195.2"] ;
+0 -> 1 [labeldistance=2.5, labelangle=45, headlabel="True"] ;
+5 [label="mse = 131549.5\nsamples = 115\nvalue = 1049.0"] ;
+1 -> 5 ;
+6 [label="mse = 595821.2\nsamples = 97\nvalue = 3446.2"] ;
+1 -> 6 ;
+2 [label="High_DASH <= 1.7\nmse = 7202716.0\nsamples = 203\nvalue = 8385.7"] ;
+0 -> 2 [labeldistance=2.5, labelangle=-45, headlabel="False"] ;
+3 [label="mse = 1587117.8\nsamples = 161\nvalue = 7282.8"] ;
+2 -> 3 ;
+4 [label="mse = 5253416.4\nsamples = 42\nvalue = 12814.5"] ;
+2 -> 4 ;
+}
