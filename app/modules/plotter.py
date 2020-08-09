@@ -12,7 +12,8 @@ class Plotter:
     def __post_init__(self):
         {
             "strategy_base": self.strategy_base,
-            "strategy_simple": self.strategy_simple
+            "strategy_simple": self.strategy_simple,
+            "strategy_macd_crossover": self.strategy_macd_crossover
         }.get(self.plot_name)(self.df)
 
     @staticmethod
@@ -36,6 +37,22 @@ class Plotter:
         fig.add_trace(go.Scatter(x=df["Date"], y=df["close"]), row=2, col=1)
         fig.add_trace(go.Scatter(x=df["Date"], y=df["short_mavg"]), row=2, col=1)
         fig.add_trace(go.Scatter(x=df["Date"], y=df["long_mavg"]), row=2, col=1)
+
+        fig.add_trace(go.Scatter(x=df["Date"], y=df["active"]), row=3, col=1)
+        fig.add_trace(go.Scatter(x=df["Date"], y=df["cross"]), row=3, col=1)
+
+        fig.update_layout(autosize=True, title_text="darkman-bot performance")
+        fig.show()
+
+    @staticmethod
+    def strategy_macd_crossover(df):
+        fig = make_subplots(rows=3, cols=1)
+
+        fig.add_trace(go.Scatter(x=df["Date"], y=df["balance"]), row=1, col=1)
+
+        fig.add_trace(go.Scatter(x=df["Date"], y=df["close"]), row=2, col=1)
+        fig.add_trace(go.Scatter(x=df["Date"], y=df["ema_200"]), row=2, col=1)
+        fig.add_trace(go.Scatter(x=df["Date"], y=df["macd"]), row=2, col=1)
 
         fig.add_trace(go.Scatter(x=df["Date"], y=df["active"]), row=3, col=1)
 
